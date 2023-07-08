@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import Numbers from './components/Numbers'
 import SearchForm from './components/SearchForm'
 import AddPerson from './components/AddPerson'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '201-245-8724' },{ name: 'Frank', number: '224-556-7843' }
-  ]) 
+  // const [persons, setPersons] = useState([
+  //   { name: 'Arto Hellas', number: '201-245-8724' },{ name: 'Frank', number: '224-556-7843' }
+  // ]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
@@ -53,7 +55,32 @@ const App = () => {
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  
+// Getting data from JSON server with .then
+
+//   useEffect(() => {
+//   console.log('effect')
+//   axios
+//     .get('http://localhost:3001/persons')
+//     .then(response => {
+//       console.log('promise fulfilled')
+//       setPersons(response.data)
+//     })
+// }, [])
+
+// Getting data from JSON server with try/catch
+useEffect(() => {
+  const fetchPersons = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/persons')
+      setPersons(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  fetchPersons()
+}, [])
+
+
 
   return (
     <div>
