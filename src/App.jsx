@@ -3,36 +3,63 @@ import axios from 'axios'
 import Numbers from './components/Numbers'
 import SearchForm from './components/SearchForm'
 import AddPerson from './components/AddPerson'
+import personsService from './services/persons/'
 
 const App = () => {
-  // const [persons, setPersons] = useState([
-  //   { name: 'Arto Hellas', number: '201-245-8724' },{ name: 'Frank', number: '224-556-7843' }
-  // ]) 
+ 
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
   const [searchTerm, setSearchTerm] = useState('')
+  
 
-  // handle form submit to add new person
-  const addPerson = (event) => {
+  const addPerson = async (event) => {
     event.preventDefault()
+
     const personObject = {
       name: newName,
       number: newNumber,
     }
 
-    // if the person already exists, throw error
-    if (persons.some(person => person.name === personObject.name)){
-      alert(`${personObject.name} already exists! Add a different person.`)
-      setNewName('')
-      return
-    } 
+     // if the person already exists, update their number
+  const existingPerson = persons.find(person => person.name === personObject.name);
 
-    // add the new person and clear input
-      setPersons(persons.concat(personObject))
+  if (existingPerson) {
+    if (window.confirm(`${existingPerson.name} already exists, want to update their number?`)){
+
+      const updatedPerson = { ...existingPerson, number: personObject.number };
+      try {
+        const updatedData = await personsService.updatePerson(existingPerson.id, updatedPerson);
+        console.log('updated data', updatedData)
+        // After updating on the server, also update the local state
+        const updatedPersonsList = persons.map(person => 
+          person.id !== existingPerson.id ? person : updatedData
+        );
+        setPersons(updatedPersonsList);
+      } catch (error) {
+        console.error(error);
+      }
+      return;
+    }
+    }
+    
+  
+  // if not, add the new person
+    try {
+      
+      const newPerson = await personsService.create(personObject)
+      console.log(newPerson); // Response data from the server
+      console.log('Data added successfully');
+
+      // add the new person and clear input
+      setPersons(persons.concat(newPerson))
       setNewName('')
       setNewNumber('')
+    } catch (error) {
+      console.log(error)
+    }
+  
   }
 
   // handle input in form
@@ -55,31 +82,34 @@ const App = () => {
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-// Getting data from JSON server with .then
-
-//   useEffect(() => {
-//   console.log('effect')
-//   axios
-//     .get('http://localhost:3001/persons')
-//     .then(response => {
-//       console.log('promise fulfilled')
-//       setPersons(response.data)
-//     })
-// }, [])
-
 // Getting data from JSON server with try/catch
 useEffect(() => {
   const fetchPersons = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/persons')
-      setPersons(response.data)
+      const initialPersons = await personsService.getAll()
+      setPersons(initialPersons)
     } catch (error) {
       console.log(error)
     }
   }
   fetchPersons()
+  
 }, [])
 
+const handleDelete = async (id) => {
+  const personToBeDeleted = persons.find(person => person.id === id)
+  if(window.confirm(`Delete ${personToBeDeleted.name}?`)) {
+    try {
+      await personsService.removePerson(id)
+
+      const updatedPeople = persons.filter(person => person.id !== id)
+
+      setPersons(updatedPeople)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 
 
   return (
@@ -95,7 +125,7 @@ useEffect(() => {
       newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Numbers persons={filteredPersons} />
+      <Numbers persons={filteredPersons} handleDelete={handleDelete} />
     </div>
   )
 }
