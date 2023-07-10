@@ -37,7 +37,9 @@ const getAll = async () => {
       return response.data;
     } catch (error) {
       console.error(error);
+      throw error; // Re-throw the error to be caught by the caller
     }
   }
+  
 
 export default {getAll, create, removePerson, updatePerson}
