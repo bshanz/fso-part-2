@@ -9,6 +9,8 @@ import Error from './components/Error'
 import DisplayCountries from './components/DisplayCountries'
 import SearchCountries from './components/SearchCountries'
 
+console.log("phonebook")
+
 const App = () => {
 
   // State for all countries
