@@ -35,7 +35,7 @@ const getAll = async () => {
 
   const updatePerson = async (id, updatedObject) => {
     try {
-      const response = await axios.put(`http://localhost:3001/persons/${id}`, updatedObject);
+      const response = await axios.put(`${baseUrl}/${id}`, updatedObject);
       return response.data;
     } catch (error) {
       console.error(error);
