@@ -83,7 +83,7 @@ const App = () => {
       setNewNumber('')
 
       setMessage(
-        `Note '${newPerson.name}' was successfully added!`
+        `'${newPerson.name}' was successfully added!`
       )
       setTimeout(() => {
         setMessage(null)
