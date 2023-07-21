@@ -22,75 +22,75 @@ const App = () => {
 
   const addPerson = async (event) => {
     event.preventDefault()
-
+  
     const personObject = {
       name: newName,
       number: newNumber,
     }
-
-     // if the person already exists, update their number
-  const existingPerson = persons.find(person => person.name === personObject.name);
-
-  if (existingPerson) {
-    if (window.confirm(`${existingPerson.name} already exists, want to update their number?`)){
-
-      const updatedPerson = { ...existingPerson, number: personObject.number };
-      try {
-        const updatedData = await personsService.updatePerson(existingPerson.id, updatedPerson);
-        // After updating on the server, also update the local state
-        const updatedPersonsList = persons.map(person => 
-          person.id !== existingPerson.id ? person : updatedData
-        );
-        setPersons(updatedPersonsList);
-      
-        setMessage(
-          `${updatedPerson.name}'s number was successfully updated!`
-        )
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-
-      } catch (error) {
-        console.error(error);
-        console.log("BIG ERROR HERE")
-        setErrorMessage(
-          `Error: ${existingPerson.name} was already removed from the server.`
-        )
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-
-         // Remove the person from local state as well
-          const updatedPersonsList = persons.filter(person => 
-            person.id !== existingPerson.id
+  
+    // if the person already exists, update their number
+    const existingPerson = persons.find(person => person.name === personObject.name);
+  
+    if (existingPerson) {
+      if (window.confirm(`${existingPerson.name} already exists, want to update their number?`)){
+  
+        const updatedPerson = { ...existingPerson, number: personObject.number };
+        try {
+          const updatedData = await personsService.updatePerson(existingPerson.id, updatedPerson);
+          // After updating on the server, also update the local state
+          const updatedPersonsList = persons.map(person => 
+            person.id !== existingPerson.id ? person : updatedData
           );
           setPersons(updatedPersonsList);
-      }
-      
-      return;
-    }
-    }
-    
   
-  // if not, add the new person
+          setMessage(
+            `${updatedPerson.name}'s number was successfully updated!`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+  
+        } catch (error) {
+          console.error(error);
+          console.log("BIG ERROR HERE")
+          setErrorMessage(
+            `Error: ${existingPerson.name}'s information could not be updated. ${error.response.data.error}`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+  
+          //  // Remove the person from local state as well
+          //   const updatedPersonsList = persons.filter(person => 
+          //     person.id !== existingPerson.id
+          //   );
+          //   setPersons(updatedPersonsList);
+        }
+        
+        return;
+      }
+    }
+      
+    
+    // if not, add the new person
     try {
       
       const newPerson = await personsService.create(personObject)
       console.log(newPerson); // Response data from the server
       console.log('Data added successfully');
-
+  
       // add the new person and clear input
       setPersons(persons.concat(newPerson))
       setNewName('')
       setNewNumber('')
-
+  
       setMessage(
         `'${newPerson.name}' was successfully added!`
       )
       setTimeout(() => {
         setMessage(null)
       }, 5000)
-
+  
     } catch (error) {
       console.log("error response data", error.response.data.error)
       console.error(error);
@@ -101,8 +101,8 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
     }
-  
   }
+  
 
   // handle input in form
   const handlePersonChange = (event) => {
