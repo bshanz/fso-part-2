@@ -7,6 +7,8 @@ import personsService from './services/persons/'
 import Notification from './components/Notification'
 import Error from './components/Error'
 
+console.log("exercise 3.20 done")
+
 const App = () => {
  
   const [persons, setPersons] = useState([])
