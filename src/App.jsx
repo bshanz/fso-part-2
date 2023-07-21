@@ -7,6 +7,8 @@ import personsService from './services/persons/'
 import Notification from './components/Notification'
 import Error from './components/Error'
 
+console.log("exercise 3.20 done")
+
 const App = () => {
  
   const [persons, setPersons] = useState([])
@@ -90,10 +92,10 @@ const App = () => {
       }, 5000)
 
     } catch (error) {
-      console.log(error)
+      console.log("error response data", error.response.data.error)
       console.error(error);
         setErrorMessage(
-          `Already removed from the server`
+          `Error: ${error.response.data.error}`
         )
         setTimeout(() => {
           setErrorMessage(null)
